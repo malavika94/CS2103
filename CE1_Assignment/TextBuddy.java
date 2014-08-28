@@ -97,5 +97,7 @@ public class TextBuddy {
 		}
 	}
 	
+	private static String addText(String userCommand)
+	
 
 }
