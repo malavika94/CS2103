@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class TextBuddy {
 	
 	private static final String WELCOME_MESSAGE = "Welcome to TextBuddy. mytextfile.txt"
@@ -23,6 +25,77 @@ public class TextBuddy {
 	private static final int SLOT_UNAVAILABLE = -1;
 	private static final int NOT_FOUND = -2;
 	
+	private static final int PARAM_START = 0;
+	private static final int NUM_TEXT = 10;
+	private static final String[] textline = new String[NUM_TEXT];
+	
+	private static Scanner sc = new Scanner(System.in);
+	
 	public static void main(String[] args) {
+		showToUser(WELCOME_MESSAGE);
+		while (true) {
+			showToUser(MESSAGE_COMMAND);
+			String userCommand = sc.nextLine();
+			showToUser(executeCommand(userCommand));
+		}
 	}
+	
+	private static void showToUser(String text){
+		System.out.print(text);
+	}
+	private static void exit() {
+		System.exit(0);
+	}
+	public static String executeCommand(String userCommand){
+		if (userCommand.trim().equals("")){
+			return String.format(MESSAGE_INVALID_COMMAND, userCommand);
+		}
+		String commandTypeString = getFirstWord(userCommand);
+		COMMAND_TYPE commandType = determineCommandType(commandTypeString);
+		
+		switch (commandType) {
+			case  ADD_TEXT: {
+				return addText(userCommand);
+			}
+			case REMOVE_TEXT: {
+				return removeText(userCommand);
+			}
+			case CLEAR_ALL: {
+				return clearAllText(userCommand);
+			}
+			case INVALID: {
+				return String.format(ERROR_INVALID_COMMAND, userCommand);
+			}
+			case EXIT: {
+				exit();
+			}
+			default: {
+				throw new Error("Unrecognized command type");
+			}
+		}
+	}
+	
+	private static COMMAND_TYPE determineCommandType(String commandType){
+		if (commandTypeString == null){
+			throw new Error("Command cannot be null!");
+		}
+		
+		if (commandTypeString.equalsIgnoreCase("add")) {
+			return COMMAND_TYPE.ADD_TEXT;
+		}
+		else if (commandTypeString.equalsIgnoreCase("delete")) {
+			return COMMAND_TYPE.REMOVE_TEXT;
+		}
+		else if (commandTypeString.equalsIgnoreCase("clear")) {
+			return COMMAND_TYPE.CLEAR_ALL;
+		}
+		else if (commandTypeString.equalsIgnoreCase("exit")) {
+			return COMMAND_TYPE.EXIT;
+		}
+		else {
+			return COMMAND_TYPE.INVALID;
+		}
+	}
+	
+
 }
