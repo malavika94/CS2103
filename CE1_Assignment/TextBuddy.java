@@ -75,7 +75,7 @@ public class TextBuddy {
 		}
 	}
 	
-	private static COMMAND_TYPE determineCommandType(String commandType){
+	private static COMMAND_TYPE determineCommandType(String commandTypeString){
 		if (commandTypeString == null){
 			throw new Error("Command cannot be null!");
 		}
@@ -97,7 +97,18 @@ public class TextBuddy {
 		}
 	}
 	
-	private static String addText(String userCommand)
+	private static String addText(String userCommand){
+		String textToBeAdded = removeFirstWord(userCommand);
+		
+	}
+	private static String removeFirstWord(String userCommand) {
+		return userCommand.replace(getFirstWord(userCommand), "").trim();
+	}
+	private static String getFirstWord(String userCommand) {
+		String commandTypeString = userCommand.trim().split("\\s+")[0];
+		return commandTypeString;
+	}
+	
 	
 
 }
