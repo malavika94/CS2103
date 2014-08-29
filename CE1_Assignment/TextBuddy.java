@@ -3,31 +3,23 @@ import java.util.Scanner;
 public class TextBuddy {
 	
 	private static final String WELCOME_MESSAGE = "Welcome to TextBuddy. mytextfile.txt"
-			+ "is ready for use.";
-	private static final String MESSAGE_ADDED = "added to mytextfile.txt"
-			+ ""%1$s"";
-	private static final String MESSAGE_CLEAR = "All content deleted from %1$s";
-	private static final String MESSAGE_ADD = "Added \"%1$s\"";
-	private static final String MESSAGE_EMPTY_DATA = "\"%1$s\" is empty.";
-	private static final String MESSAGE_DELETE = "Deleted \"%1$s\"";
+			+ " is ready for use.\n";
+	private static final String MESSAGE_CLEAR = "All content deleted from \"%1$s\"\n";
+	private static final String MESSAGE_ADD = "Added \"%1$s\"\n";
+	private static final String MESSAGE_DELETE = "Deleted \"%1$s\"\n";
 	private static final String MESSAGE_COMMAND = "command: ";
-	//private static final String MESSAGE_NO_SPACE = "No more space to store"; 
 	//Maximum of 10 strings can be save only in the array using this textbuddy
 	
-	private static final String ERROR_INVALID_COMMAND = "Error: Invalid command. Command \"%1$s\" does not exist";
-	private static final String ERROR_DOESNT_EXIST = "Error: Unable to delete \"%1$s\"";
-	private static final String ERROR_CANT_ADD = "Error: Unable to add \"%1$s\"";
+	private static final String ERROR_INVALID_COMMAND = "Error: Invalid command. Command \"%1$s\" does not exist\n";
+	private static final String ERROR_DOESNT_EXIST = "Error: Unable to delete \"%1$s\"\n";
+	private static final String ERROR_CANT_ADD = "Error: Unable to add \"%1$s\"\n";
 	
 	enum COMMAND_TYPE {
-		ADD_TEXT, REMOVE_TEXT, CLEAR_ALL, INVALID, EXIT
+		ADD_TEXT, REMOVE_TEXT, CLEAR_ALL, DISPLAY, INVALID, EXIT
 	};
 	
-	private static final int SLOT_UNAVAILABLE = -1;
-	private static final int NOT_FOUND = -2;
-	
-	private static final int PARAM_START = 0;
 	private static final int NUM_TEXT = 10;
-	private static final String[] textList = new String[NUM_TEXT];
+	private static final String[] textList = new String[NUM_TEXT]; 
 	
 	private static Scanner sc = new Scanner(System.in);
 	
@@ -50,7 +42,7 @@ public class TextBuddy {
 	
 	public static String executeCommand(String userCommand){
 		if (userCommand.trim().equals("")){
-			return String.format(MESSAGE_INVALID_COMMAND, userCommand);
+			return String.format(ERROR_INVALID_COMMAND, userCommand);
 		}
 		String commandTypeString = getFirstWord(userCommand);
 		COMMAND_TYPE commandType = determineCommandType(commandTypeString);
@@ -64,6 +56,9 @@ public class TextBuddy {
 			}
 			case CLEAR_ALL: {
 				return clearAllText(userCommand);
+			}
+			case DISPLAY: {
+				 printAll(textList);
 			}
 			case INVALID: {
 				return String.format(ERROR_INVALID_COMMAND, userCommand);
@@ -85,11 +80,14 @@ public class TextBuddy {
 		if (commandTypeString.equalsIgnoreCase("add")) {
 			return COMMAND_TYPE.ADD_TEXT;
 		}
-		else if (commandTypeString.equalsIgnoreCase("delete")) {
+		else if (commandTypeString.equalsIgnoreCase("remove")) {
 			return COMMAND_TYPE.REMOVE_TEXT;
 		}
 		else if (commandTypeString.equalsIgnoreCase("clear")) {
 			return COMMAND_TYPE.CLEAR_ALL;
+		}
+		else if (commandTypeString.equalsIgnoreCase("display")) {
+			return COMMAND_TYPE.DISPLAY;
 		}
 		else if (commandTypeString.equalsIgnoreCase("exit")) {
 			return COMMAND_TYPE.EXIT;
@@ -115,22 +113,50 @@ public class TextBuddy {
 	}
 	
 	private static String removeText (String userCommand) {
-		String textToBeRemoved = removeFirstWord(userCommand);
+		String removeCommand = removeFirstWord(userCommand);
+		int removeNum = Integer.parseInt(removeCommand);
+		String removedText = textList[removeNum-1];
 		int i = 0;
-		while (i<NUM_TEXT){
-			if (textToBeRemoved.equals(textList[i])){
+		while (i<textList.length){
+			if (removeNum == (i+1)){
 				textList[i] = null;
+				moveUp(textList);
+				return String.format(MESSAGE_DELETE, removedText);
 			}
 			else {
-				return String.format(ERROR_DOESNT_EXIST, textToBeRemoved);
+				i++;
 			}
 		}
+		return String.format(ERROR_DOESNT_EXIST, removeNum);
 	}
 	
 	private static String clearAllText (String userCommand){
 		String clearAll = removeFirstWord(userCommand);
 		for (int i=0; i<NUM_TEXT; i++) {
 			textList[i] = null;
+		}
+		return String.format(MESSAGE_CLEAR, "TextBuddy");
+	}
+	
+	private static void printAll (String[] textList){
+		for (int i=0; i<NUM_TEXT; i++) {
+			int j = i;
+			if (textList[j] != null) {
+				System.out.println((j+1)+ ". " + textList[i]);
+			}
+		}
+	}
+	
+	private static void moveUp(String[] textList) {
+		int i = 0;
+		while (i<textList.length) {
+			if (textList[i] == null) {
+				for (int j=i; j<textList.length -1 ; j++) {
+					textList[j] = textList[j+1];
+				}
+			}
+			i++;
+			break;
 		}
 	}
 	
@@ -142,7 +168,4 @@ public class TextBuddy {
 		String commandTypeString = userCommand.trim().split("\\s+")[0];
 		return commandTypeString;
 	}
-	
-	
-
 }
